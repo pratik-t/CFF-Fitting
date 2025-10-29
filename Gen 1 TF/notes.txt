@@ -1,0 +1,23 @@
+Observation: Creating the model once (using the model class create model function) then compiling and fitting the model per iteration made the results progressively bad. Changing it so that a new model with the same parameters is created per loop iteration fixed this problem. 
+
+GPT answer: 
+
+Keras/TensorFlow objects are stateful. If you reuse the same layer/optimizer/callback objects across runs, they carry internal state (variables, running stats, optimizer slots, counters) from the previous run. That hidden state slowly pollutes later fits and makes them worse. Creating a brand-new model class each iteration forces fresh layers, fresh variables, fresh optimizers and clean state — which is why your results recovered.
+
+* The main culprits (what actually leaks/shared across runs)
+1. Layers are stateful. Many layers create tf.Variables (weights, BatchNorm moving mean/var, LSTM states). Reusing a layer instance reuses its variables.
+2. Optimizers hold slot variables. Adam, RMSProp, etc. keep m/v or momentum slots; reusing an optimizer keeps previous momentum.
+3. Callbacks hold history/counters. ReduceLROnPlateau, EarlyStopping maintain internal counters and best-values — reusing them is wrong.
+4. Keras/TF graph & trackers. If you don’t clear session, TF keeps graph metadata and tracked objects which can interact with new models.
+5. GPU memory / runtime state can fragment or keep allocations that affect subsequent runs.
+
+* Practical rules to avoid the problem
+1. Create new layers/models per run (don’t reuse layer instances).
+2. Create a new optimizer and new callback objects for each fit (don’t reuse them).
+3. Call tf.keras.backend.clear_session() before building a new model to release graph/resources.
+4. Optionally del model; gc.collect() after each run to help free memory.
+5. If you need absolute isolation, run each trial in a fresh process (multiprocessing) — cheapest way to avoid subtle shared state.
+
+Comments: Maybe I could've figured this out myself if I plotted the loss? Doesnt't really matter all that much.
+
+Fix: modifyLR, EarlyStop and Adam optimizer hold state. So create them fresh while fitting and reinitialise weights.
