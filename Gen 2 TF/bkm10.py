@@ -5,7 +5,7 @@ class BKM10(keras.layers.Layer):
 
     def __init__(self, k, Q2, x, t, helc=0, twist=2):
         '''
-        kins(sequence of float, shape(5,)): Kinematic variables[k, Q², x_b, t, φ] where
+        kins(sequence of floats): Kinematic variables k, Q², x_b, t, φ where
         - k  : incoming lepton energy in the target rest frame(GeV)
         - Q² : virtuality of the photon(GeV²)
         - x  : Bjorken x (dimensionless)
@@ -86,20 +86,28 @@ class BKM10(keras.layers.Layer):
         P1 = 1. + (2.*kDelta)/self.Q2
         P2 = (-2.*kDelta+self.t)/self.Q2
 
-        # ReH, ReHt, ReE, ReEt, ImH, ImHt, ImE, ImEt = tf.unstack(cffs, axis=1)
-        ReH, ReHt, ReE, T_DVCS_2 = tf.unstack(cffs, axis=1)
-        ImH = tf.constant(0.0, dtype=tf.float32)
-        ImHt = tf.constant(0.0, dtype=tf.float32)
-        ImE = tf.constant(0.0, dtype=tf.float32)
+        ReH, ReHt, ReE, ReEt, ImH, ImHt = tf.unstack(cffs, axis=1)
+        
+        # ReH = tf.constant(-2.51418, dtype=tf.float32)
+        ReHt = tf.constant(1.35815, dtype=tf.float32)
 
+        ReE = tf.constant(2.19029, dtype=tf.float32)
+        ReEt = tf.constant(128.22822, dtype=tf.float32)
+
+        # ImH = tf.constant(3.21987, dtype=tf.float32)
+        ImHt = tf.constant(1.50386, dtype=tf.float32)
+
+        ImE = tf.constant(0.0, dtype=tf.float32)
+        ImEt = tf.constant(0.0, dtype=tf.float32)
+        
         T_BH_2 = self.compute_BH_amplitude(phi, P1, P2)
 
         I = self.compute_Interference(phi, P1, P2, ReH, ImH, ReHt, ImHt, ReE, ImE)
 
-        # T_DVCS_2 = self.compute_DVCS_amplitude(phi, ReH, ImH, ReHt, ImHt, ReE, ImE, ReEt, ImEt)
+        T_DVCS_2 = self.compute_DVCS_amplitude(phi, ReH, ImH, ReHt, ImHt, ReE, ImE, ReEt, ImEt)
 
         d_sigma = T_BH_2 + T_DVCS_2 + I
-        
+        # tf.print(cffs)
         return d_sigma
 
     def compute_BH_amplitude(self, phi, P1, P2):
@@ -140,7 +148,7 @@ class BKM10(keras.layers.Layer):
         """
 
         c0_I, c1_I, c2_I, c3_I, s1_I, s2_I = self.I_UP_coeffs(ReH, ImH, ReHt, ImHt, ReE, ImE)
-
+        
         # BKM 2010 : Eq (2.34)
         I = 1./(self.x*self.y*self.y*self.y*self.t*P1*P2) * \
             (c0_I + c1_I*tf.cos(phi) + c2_I*tf.cos(2.*phi) +
@@ -394,16 +402,16 @@ class BKM10(keras.layers.Layer):
             # BKM 2010 : Eq (2.30)
             ReCC_A_ = A*(self.F1+self.F2)*ReHt_
             ImCC_A_ = A*(self.F1+self.F2)*ImHt_
-
+            
             return ReCC_, ImCC_, ReCC_V_, ImCC_V_, ReCC_A_, ImCC_A_
 
         ReCC, ImCC, ReCC_V, ImCC_V, ReCC_A, ImCC_A = CCI_UP_of_F(
             ReH, ImH, ReHt, ImHt, ReE, ImE)
-
+        
         # First term of BKM 2010 : Eq (2.35)
         c0_A, c1_A, c2_A, c3_A, s1_A, s2_A = self.coeffs_plus_plus_UP(
             ReCC, ReCC_V, ReCC_A, ImCC, ImCC_V, ImCC_A)
-
+        
         ReH_eff = ReH * self.factor
         ImH_eff = ImH * self.factor
         ReHt_eff = ReHt * self.factor
@@ -420,7 +428,7 @@ class BKM10(keras.layers.Layer):
 
         # Third term of BKM 2010 : Eq (2.35) - Need to pass CFF_T to coeffs_minus_plus_UP. Skip for now.
         c0_C, c1_C, c2_C, c3_C, s1_C, s2_C = 0., 0., 0., 0., 0., 0.
-
+        
         c0 = c0_A + c0_B + c0_C
         c1 = c1_A + c1_B + c1_C
         c2 = c2_A + c2_B + c2_C
@@ -547,7 +555,7 @@ class BKM10(keras.layers.Layer):
         c3 = c3_pp*CC3_pp
         s1 = s1_pp*SS1_pp
         s2 = s2_pp*SS2_pp
-
+        
         return c0, c1, c2, c3, s1, s2
 
     def coeffs_zero_plus_UP(self, ReCC_eff, ReCC_V_eff, ReCC_A_eff, ImCC_eff, ImCC_V_eff, ImCC_A_eff):
