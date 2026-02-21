@@ -72,7 +72,7 @@ class CFF_Fit_Model(keras.layers.Layer):
                 y_pred (float): Model outputs, predicted CFFs tensor
             '''
 
-            phi, dsig_true, errors, weight = tf.unstack(y_true, axis=1)
+            phi, dsig_true, dsig_err, delsig_true, delsig_err, dsig_weight, delsig_weight = tf.unstack(y_true, axis=1)
 
             # chi2, r2 = self.goodness_of_fit(kinematics_class, outputs_tensor, y_pred)
 
@@ -80,10 +80,12 @@ class CFF_Fit_Model(keras.layers.Layer):
             dsig_mins = kinematics_mins.calculate_cross_section(phi, y_pred)
 
             dsig_pred = 0.5*(dsig_plus+dsig_mins)
+            delsig_pred = 0.5*(dsig_plus-dsig_mins)
             
-            dsig_true = keras.ops.log10(dsig_true)
-            dsig_pred = keras.ops.log10(dsig_pred)
-            weighted_mae = tf.reduce_sum(weight * tf.abs(dsig_true - dsig_pred))
+            # dsig_true = keras.ops.log10(dsig_true)
+            # dsig_pred = keras.ops.log10(dsig_pred)
+            weighted_mae = tf.reduce_sum(dsig_weight * tf.abs(dsig_true - dsig_pred)+
+                                         delsig_weight * tf.abs(delsig_true - delsig_pred))
             
             return weighted_mae
         

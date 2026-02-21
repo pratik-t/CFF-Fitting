@@ -8,7 +8,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 import tensorflow as tf
 
 # # ---- Threading control ----
-# # Limit intra/inter op threads
+# Limit intra/inter op threads
 tf.get_logger().setLevel('ERROR')
 tf.config.set_visible_devices([], 'GPU')
 tf.config.threading.set_intra_op_parallelism_threads(1)
@@ -18,7 +18,7 @@ import keras
 
 # ---- Global config variables ----
 CONFIG = {
-    'sets': [1],
+    'sets': [4],
     'replicas': 2,
     'threads': 1,
     'data_filename': 'finalised pseudodata.csv', 
