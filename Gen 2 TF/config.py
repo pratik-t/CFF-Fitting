@@ -25,6 +25,7 @@ CONFIG = {
     
     'show_devices': False,
     'verbose': 0,
+    'max_epochs': 1000, 
     'learning_rate': 1e-4,
     'modify_LR_factor': 0.8,
     'modify_LR_patience': 30,

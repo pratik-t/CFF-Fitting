@@ -15,8 +15,6 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 from sklearn.utils import shuffle
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import MinMaxScaler
-# tf.config.run_functions_eagerly(True)
-# tf.keras.backend.set_floatx("float32")
 
 
 def run_replica(set_id, replica_id, kinematics_plus, kinematics_mins, df_inputs, df_outputs):
@@ -51,7 +49,8 @@ def run_replica(set_id, replica_id, kinematics_plus, kinematics_mins, df_inputs,
     kins_train = tf.convert_to_tensor(df_inputs, dtype=tf.float32)
     outs_train = tf.convert_to_tensor(outs_train, dtype=tf.float32)
 
-    history = model_class.fit_model(kinematics_plus, kinematics_mins, kins_train, outs_train)
+    history = model_class.fit_model(kinematics_plus, kinematics_mins,
+                                    kins_train, outs_train, epochs=config.CONFIG['max_epochs'])
     cffs_pred = model_class.model(kins_train, training=False).numpy()
 
     cffs_fit = cffs_pred[0]
