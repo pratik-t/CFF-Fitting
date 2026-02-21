@@ -88,14 +88,14 @@ class BKM10(keras.layers.Layer):
 
         ReH, ReHt, ReE, ReEt, ImH, ImHt = tf.unstack(cffs, axis=1)
         
-        # ReH = tf.constant(-2.51418, dtype=tf.float32)
-        ReHt = tf.constant(1.35815, dtype=tf.float32)
+        # ReH = tf.constant(-2.51484, dtype = tf.float32)
+        ReHt = tf.constant(1.3474, dtype=tf.float32)
 
-        ReE = tf.constant(2.19029, dtype=tf.float32)
-        ReEt = tf.constant(128.22822, dtype=tf.float32)
+        ReE = tf.constant(2.1822, dtype=tf.float32)
+        ReEt = tf.constant(126.28265, dtype=tf.float32)
 
-        # ImH = tf.constant(3.21987, dtype=tf.float32)
-        ImHt = tf.constant(1.50386, dtype=tf.float32)
+        # ImH = tf.constant(3.20275, dtype = tf.float32)
+        ImHt = tf.constant(1.49975, dtype=tf.float32)
 
         ImE = tf.constant(0.0, dtype=tf.float32)
         ImEt = tf.constant(0.0, dtype=tf.float32)

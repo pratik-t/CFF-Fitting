@@ -36,6 +36,7 @@ def run_replica(set_id, replica_id, kinematics_plus, kinematics_mins, df_inputs,
         summary =     config.CONFIG['model_summary'])
 
     sample_dsig = np.random.normal(loc=df_outputs['dsig'], scale=df_outputs['dsig_err'])
+    sample_delsig = np.random.normal(loc=df_outputs['delsig'], scale=df_outputs['delsig_err'])
 
     while np.any(sample_dsig <= 0):
         mask = sample_dsig <= 0
@@ -43,6 +44,7 @@ def run_replica(set_id, replica_id, kinematics_plus, kinematics_mins, df_inputs,
 
     outs_train = df_outputs.copy()
     outs_train['dsig'] = sample_dsig
+    outs_train['delsig'] = sample_delsig
 
     outs_train = shuffle(outs_train)
 
@@ -57,9 +59,11 @@ def run_replica(set_id, replica_id, kinematics_plus, kinematics_mins, df_inputs,
     dsig_plus = kinematics_plus.calculate_cross_section(phi_fit, cffs_pred)
     dsig_mins = kinematics_mins.calculate_cross_section(phi_fit, cffs_pred)
     dsig_fit = 0.5*(dsig_plus+dsig_mins)
+    delsig_fit = 0.5*(dsig_plus-dsig_mins)
 
     result_csv = pd.DataFrame({'set': set_id, 'replica': replica_id, 'phi': np.rad2deg(np.pi-phi_fit), 
                                'dsig_sample': sample_dsig, 'dsig_fit': dsig_fit,
+                               'delsig_sample': sample_delsig, 'delsig_fit': delsig_fit,
                                'ReH_pred': cffs_fit[0], 'ReHt_pred': cffs_fit[1], 
                                'ReE_pred': cffs_fit[2], 'ReEt_pred': cffs_fit[3], 
                                'ImH_pred': cffs_fit[4], 'ImHt_pred': cffs_fit[5]})
@@ -92,12 +96,15 @@ def worker(args):
 
     df_kins = df[['Q2', 'xB', 't']].copy()
 
-    df_dsig = df[['phi', 'dsig', 'dsig_err']].copy()
+    df_dsig = df[['phi', 'dsig', 'dsig_err', 'delsig', 'delsig_err']].copy()
 
-    weights = 1/(df_dsig['dsig_err'])
-    weights /= np.sum(weights)
+    dsig_weight = 1/(df_dsig['dsig_err'])
+    dsig_weight /= np.sum(dsig_weight)
+    delsig_weight = 1/(df_dsig['delsig_err'])
+    delsig_weight /= np.sum(delsig_weight)
 
-    df_dsig['weights'] = weights
+    df_dsig['dsig_weight'] = dsig_weight
+    df_dsig['delsig_weight'] = delsig_weight
 
     k = df['k'].values[0]
     Q2 = df['Q2'].values[0]
