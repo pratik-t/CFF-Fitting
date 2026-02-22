@@ -1,4 +1,4 @@
-import config
+from config import CONFIG
 from bkm10 import BKM10
 from cff_fit_model import CFF_Fit_Model
 import os
@@ -20,18 +20,18 @@ from sklearn.preprocessing import MinMaxScaler
 def run_replica(set_id, replica_id, kinematics_plus, kinematics_mins, df_inputs, df_outputs):
     
     model_class = CFF_Fit_Model(
-        verbose =         config.CONFIG['verbose'],
-        LR =              config.CONFIG['learning_rate'],
-        mod_LR_factor =   config.CONFIG['modify_LR_factor'],
-        mod_LR_patience = config.CONFIG['modify_LR_patience'],
-        min_LR =          config.CONFIG['minimum_LR'],
-        ES_patience =     config.CONFIG['early_stop_patience'])
+        verbose =         CONFIG['verbose'],
+        LR =              CONFIG['learning_rate'],
+        mod_LR_factor =   CONFIG['modify_LR_factor'],
+        mod_LR_patience = CONFIG['modify_LR_patience'],
+        min_LR =          CONFIG['minimum_LR'],
+        ES_patience =     CONFIG['early_stop_patience'])
     
     model_class.create_model(
-        layers =      config.CONFIG['layers'],
-        activation =  config.CONFIG['activation'], 
-        initializer = config.CONFIG['initializer'], 
-        summary =     config.CONFIG['model_summary'])
+        layers =      CONFIG['layers'],
+        activation =  CONFIG['activation'], 
+        initializer = CONFIG['initializer'], 
+        summary =     CONFIG['model_summary'])
 
     sample_dsig = np.random.normal(loc=df_outputs['dsig'], scale=df_outputs['dsig_err'])
     sample_delsig = np.random.normal(loc=df_outputs['delsig'], scale=df_outputs['delsig_err'])
@@ -50,7 +50,9 @@ def run_replica(set_id, replica_id, kinematics_plus, kinematics_mins, df_inputs,
     outs_train = tf.convert_to_tensor(outs_train, dtype=tf.float32)
 
     history = model_class.fit_model(kinematics_plus, kinematics_mins,
-                                    kins_train, outs_train, epochs=config.CONFIG['max_epochs'])
+                                    kins_train, outs_train, 
+                                    epochs=CONFIG['max_epochs'], batch=CONFIG['batch_size'], loss_type=CONFIG['loss'])
+    
     cffs_pred = model_class.model(kins_train, training=False).numpy()
 
     cffs_fit = cffs_pred[0]
@@ -162,12 +164,12 @@ if __name__ == "__main__":
     os.makedirs('data/sample', exist_ok=True)
     os.makedirs('data/history', exist_ok=True)
     
-    sets = config.CONFIG['sets']
-    num_replicas = config.CONFIG['replicas']
-    threads = config.CONFIG['threads']
-    filename = config.CONFIG['data_filename']
+    sets = CONFIG['sets']
+    num_replicas = CONFIG['replicas']
+    threads = CONFIG['threads']
+    filename = CONFIG['data_filename']
 
-    if config.CONFIG['show_devices']:
+    if CONFIG['show_devices']:
         print("Visible devices:", tf.config.get_visible_devices())
         print("Intra threads:", tf.config.threading.get_intra_op_parallelism_threads())
         print("Inter threads:", tf.config.threading.get_inter_op_parallelism_threads())

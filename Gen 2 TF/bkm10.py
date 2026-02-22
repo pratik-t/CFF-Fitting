@@ -1,5 +1,6 @@
 import tensorflow as tf
 import keras
+from config import FIXED_CFFS
 
 class BKM10(keras.layers.Layer):
 
@@ -18,6 +19,27 @@ class BKM10(keras.layers.Layer):
         self.ALPHA = tf.constant(1/137.0359998, dtype=tf.float32)
         self.M2 = tf.constant(0.93827208816*0.93827208816, dtype=tf.float32)
         self.GeV_to_nb = tf.constant(0.389379e6, dtype=tf.float32)
+
+        # This section creates a mask array with elements 1 if CFF value is provided and 0 if not
+        # and a fixed_vals array with elements 0 if value is not provided and the value iitself otherwise
+
+        self.CFF_NAMES = ["ReH","ReHt","ReE","ReEt","ImH","ImHt","ImE","ImEt"]
+        fixed_vector = []
+        mask_vector = []
+
+        for name in self.CFF_NAMES:
+            if name in FIXED_CFFS:
+                fixed_vector.append(FIXED_CFFS[name])
+                mask_vector.append(0.0)
+            else:
+                fixed_vector.append(0.0)
+                mask_vector.append(1.0)
+
+        self.mask = tf.constant(mask_vector, dtype=tf.float32)
+        self.fixed_vals = tf.constant(fixed_vector, dtype=tf.float32)
+        
+        # in the cross section, we can then change the cffs with elementwise mult with mask to give 0 for provided vals
+        # then add fixed_vals with elementwise mult of 1-mask to fix the values which are provided
 
         self.k = k
         self.Q2 = Q2
@@ -85,21 +107,24 @@ class BKM10(keras.layers.Layer):
         # BKM 2002 : Eq (28)
         P1 = 1. + (2.*kDelta)/self.Q2
         P2 = (-2.*kDelta+self.t)/self.Q2
-
-        ReH, ReHt, ReE, ReEt, ImH, ImHt = tf.unstack(cffs, axis=1)
         
+        # check comment in class init
+        cffs = cffs * self.mask + (1.0 - self.mask) * self.fixed_vals
+        
+        ReH, ReHt, ReE, ReEt, ImH, ImHt, ImE, ImEt = tf.unstack(cffs, axis=1)
+                
         # ReH = tf.constant(-2.51484, dtype = tf.float32)
-        ReHt = tf.constant(1.3474, dtype=tf.float32)
+        # ReHt = tf.constant(1.3474, dtype=tf.float32)
 
-        ReE = tf.constant(2.1822, dtype=tf.float32)
-        ReEt = tf.constant(126.28265, dtype=tf.float32)
+        # ReE = tf.constant(2.1822, dtype=tf.float32)
+        # ReEt = tf.constant(126.28265, dtype=tf.float32)
 
         # ImH = tf.constant(3.20275, dtype = tf.float32)
-        ImHt = tf.constant(1.49975, dtype=tf.float32)
+        # ImHt = tf.constant(1.49975, dtype=tf.float32)
 
-        ImE = tf.constant(0.0, dtype=tf.float32)
-        ImEt = tf.constant(0.0, dtype=tf.float32)
-        
+        # ImE = tf.constant(0.0, dtype=tf.float32)
+        # ImEt = tf.constant(0.0, dtype=tf.float32)
+
         T_BH_2 = self.compute_BH_amplitude(phi, P1, P2)
 
         I = self.compute_Interference(phi, P1, P2, ReH, ImH, ReHt, ImHt, ReE, ImE)
@@ -107,7 +132,7 @@ class BKM10(keras.layers.Layer):
         T_DVCS_2 = self.compute_DVCS_amplitude(phi, ReH, ImH, ReHt, ImHt, ReE, ImE, ReEt, ImEt)
 
         d_sigma = T_BH_2 + T_DVCS_2 + I
-        # tf.print(cffs)
+        
         return d_sigma
 
     def compute_BH_amplitude(self, phi, P1, P2):
