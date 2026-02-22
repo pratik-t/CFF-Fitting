@@ -16,16 +16,23 @@ tf.config.threading.set_inter_op_parallelism_threads(1)
 
 import keras
 
+MAE = 1
+MSE = 2
+
 # ---- Global config variables ----
 CONFIG = {
     'sets': [4],
-    'replicas': 200,
+    'replicas': 45,
     'threads': 45,
     'data_filename': 'finalised pseudodata.csv', 
     
     'show_devices': False,
     'verbose': 0,
-    'max_epochs': 1000, 
+    'model_summary' : False,
+
+    'max_epochs': 200, 
+    'batch_size': 24,
+    'loss': MSE,
     'learning_rate': 1e-3,
     'modify_LR_factor': 0.8,
     'modify_LR_patience': 30,
@@ -34,5 +41,15 @@ CONFIG = {
     'layers': [10, 50, 100, 50, 10],
     'activation': 'relu', 
     'initializer': keras.initializers.glorot_uniform(),
-    'model_summary' : False
+}
+
+FIXED_CFFS = {
+        # 'ReH': -2.51484,
+        'ReHt': 1.3474,
+        'ReE': 2.1822,
+        'ReEt': 126.28265,
+        # 'ImH': 3.20275, 
+        'ImHt': 1.49975,
+        'ImE': 0.0,
+        'ImEt': 0.0,
 }

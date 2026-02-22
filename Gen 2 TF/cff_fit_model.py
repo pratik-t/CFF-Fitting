@@ -24,14 +24,14 @@ class CFF_Fit_Model(keras.layers.Layer):
             hidden = keras.layers.Dense(layers[i+1], name = f'hidden_{i+1}',
                                         kernel_initializer=initializer, activation=activation)(hidden)
 
-        predicted_cffs = keras.layers.Dense(6, name='predicted_CFFs')(hidden)
+        predicted_cffs = keras.layers.Dense(8, name='predicted_CFFs')(hidden)
 
         self.model = keras.Model(inputs=scaled_inputs, outputs=predicted_cffs)
         
         if summary:
             print(self.model.summary())
     
-    def fit_model(self, kinematics_plus, kinematics_mins, scaled_inputs, outputs_tensor, epochs=500, batch=1):
+    def fit_model(self, kinematics_plus, kinematics_mins, scaled_inputs, outputs_tensor, epochs, batch, loss_type):
         '''
         Parameters:
             model : created model
@@ -47,7 +47,7 @@ class CFF_Fit_Model(keras.layers.Layer):
         opt = keras.optimizers.Adam(self.lr)
 
         self.model.compile(optimizer=opt,
-                           loss=self.compute_loss(kinematics_plus, kinematics_mins, outputs_tensor))
+                           loss=self.compute_loss(loss_type, kinematics_plus, kinematics_mins, outputs_tensor))
         
         modifyLR = keras.callbacks.ReduceLROnPlateau(
             monitor='loss', factor=self.mod_LR_factor, patience=self.mod_LR_patience, min_lr=self.min_LR, mode='auto')
@@ -61,7 +61,7 @@ class CFF_Fit_Model(keras.layers.Layer):
 
         return history
 
-    def compute_loss(self, kinematics_plus, kinematics_mins, outputs_tensor):
+    def compute_loss(self, loss_type, kinematics_plus, kinematics_mins, outputs_tensor):
         """
         Computes and returns the model loss.
         """
@@ -84,8 +84,8 @@ class CFF_Fit_Model(keras.layers.Layer):
             
             # dsig_true = keras.ops.log10(dsig_true)
             # dsig_pred = keras.ops.log10(dsig_pred)
-            weighted_mae = tf.reduce_sum(dsig_weight * (dsig_true - dsig_pred)**2+
-                                         delsig_weight * (delsig_true - delsig_pred)**2)
+            weighted_mae = tf.reduce_sum(dsig_weight * tf.abs(dsig_true - dsig_pred)**loss_type+
+                                         delsig_weight * tf.abs(delsig_true - delsig_pred)**loss_type)
             
             return weighted_mae
         
