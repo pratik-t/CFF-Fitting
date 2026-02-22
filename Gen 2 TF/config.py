@@ -19,14 +19,14 @@ import keras
 # ---- Global config variables ----
 CONFIG = {
     'sets': [4],
-    'replicas': 2,
-    'threads': 1,
+    'replicas': 200,
+    'threads': 45,
     'data_filename': 'finalised pseudodata.csv', 
     
     'show_devices': False,
     'verbose': 0,
     'max_epochs': 1000, 
-    'learning_rate': 1e-4,
+    'learning_rate': 1e-3,
     'modify_LR_factor': 0.8,
     'modify_LR_patience': 30,
     'minimum_LR': 1e-5,

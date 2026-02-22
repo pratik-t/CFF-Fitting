@@ -84,8 +84,8 @@ class CFF_Fit_Model(keras.layers.Layer):
             
             # dsig_true = keras.ops.log10(dsig_true)
             # dsig_pred = keras.ops.log10(dsig_pred)
-            weighted_mae = tf.reduce_sum(dsig_weight * tf.abs(dsig_true - dsig_pred)+
-                                         delsig_weight * tf.abs(delsig_true - delsig_pred))
+            weighted_mae = tf.reduce_sum(dsig_weight * (dsig_true - dsig_pred)**2+
+                                         delsig_weight * (delsig_true - delsig_pred)**2)
             
             return weighted_mae
         
