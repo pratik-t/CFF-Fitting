@@ -1,4 +1,5 @@
 from config import CONFIG
+from config import FIXED_CFFS
 from bkm10 import BKM10
 from cff_fit_model import CFF_Fit_Model
 import os
@@ -67,7 +68,8 @@ def run_replica(set_id, replica_id, kinematics_plus, kinematics_mins, df_inputs,
                                'delsig_sample': sample_delsig, 'delsig_fit': delsig_fit,
                                'ReH_pred': cffs_fit[0], 'ReHt_pred': cffs_fit[1], 
                                'ReE_pred': cffs_fit[2], 'ReEt_pred': cffs_fit[3], 
-                               'ImH_pred': cffs_fit[4], 'ImHt_pred': cffs_fit[5]})
+                               'ImH_pred': cffs_fit[4], 'ImHt_pred': cffs_fit[5], 
+                               'ImE_pred': cffs_fit[6], 'ImEt_pred': cffs_fit[7]})
     
     history_csv = pd.DataFrame(history.history)
     history_csv.insert(0, "set", set_id)
@@ -128,7 +130,7 @@ def worker(args):
     
     return history, result
 
-def run_set(set_id, num_replicas, filename, threads):
+def run_set(set_id, num_replicas, folder, filename, threads):
     
     ctx = mp.get_context("spawn")  # ensures new Python interpreters
 
@@ -143,12 +145,12 @@ def run_set(set_id, num_replicas, filename, threads):
     all_histories, all_results = zip(*results)
 
     result_writer = pq.ParquetWriter(
-        f'data/sample/set_{set_id}.parquet',
+        f'data/{folder}/sample/set_{set_id}.parquet',
         schema=pa.Table.from_pandas(all_results[0]).schema
     )
 
     history_writer = pq.ParquetWriter(
-        f'data/history/set_{set_id}.parquet',
+        f'data/{folder}/history/set_{set_id}.parquet',
         schema=pa.Table.from_pandas(all_histories[0]).schema
     )
 
@@ -161,8 +163,9 @@ def run_set(set_id, num_replicas, filename, threads):
 if __name__ == "__main__":
     
     os.makedirs('data', exist_ok=True)
-    os.makedirs('data/sample', exist_ok=True)
-    os.makedirs('data/history', exist_ok=True)
+    folder = f'bs{CONFIG['batch_size']}_loss{CONFIG['loss']}_cffs{8-len(FIXED_CFFS)}'
+    os.makedirs(f'data/{folder}/sample', exist_ok=True)
+    os.makedirs(f'data/{folder}/history', exist_ok=True)
     
     sets = CONFIG['sets']
     num_replicas = CONFIG['replicas']
@@ -177,7 +180,7 @@ if __name__ == "__main__":
     start_time = time.time()
 
     for set_id in sets:
-        run_set(set_id, num_replicas, filename, threads)
+        run_set(set_id, num_replicas, folder, filename, threads)
 
     end_time = time.time()
 
