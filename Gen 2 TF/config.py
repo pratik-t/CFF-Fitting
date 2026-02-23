@@ -22,7 +22,7 @@ MSE = 2
 # ---- Global config variables ----
 CONFIG = {
     'sets': [4],
-    'replicas': 45,
+    'replicas': 200,
     'threads': 45,
     'data_filename': 'finalised pseudodata.csv', 
     
@@ -30,8 +30,8 @@ CONFIG = {
     'verbose': 0,
     'model_summary' : False,
 
-    'max_epochs': 200, 
-    'batch_size': 24,
+    'max_epochs': 1000, 
+    'batch_size': 1,
     'loss': MSE,
     'learning_rate': 1e-3,
     'modify_LR_factor': 0.8,
@@ -45,11 +45,11 @@ CONFIG = {
 
 FIXED_CFFS = {
         # 'ReH': -2.51484,
-        'ReHt': 1.3474,
-        'ReE': 2.1822,
-        'ReEt': 126.28265,
+        # 'ReHt': 1.3474,
+        # 'ReE': 2.1822,
+        # 'ReEt': 126.28265,
         # 'ImH': 3.20275, 
-        'ImHt': 1.49975,
+        # 'ImHt': 1.49975,
         'ImE': 0.0,
         'ImEt': 0.0,
 }
