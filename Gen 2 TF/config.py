@@ -31,7 +31,7 @@ CONFIG = {
     'model_summary' : False,
 
     'max_epochs': 1000, 
-    'batch_size': 1,
+    'batch_size': 24,
     'loss': MSE,
     'learning_rate': 1e-3,
     'modify_LR_factor': 0.8,
@@ -47,7 +47,7 @@ FIXED_CFFS = {
         # 'ReH': -2.51484,
         # 'ReHt': 1.3474,
         # 'ReE': 2.1822,
-        # 'ReEt': 126.28265,
+        'ReEt': 126.28265,
         # 'ImH': 3.20275, 
         # 'ImHt': 1.49975,
         'ImE': 0.0,
