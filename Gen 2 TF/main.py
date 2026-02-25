@@ -102,8 +102,10 @@ def worker(args):
     df_dsig = df[['phi', 'dsig', 'dsig_err', 'delsig', 'delsig_err']].copy()
 
     dsig_weight = 1/(df_dsig['dsig_err'])
+    dsig_weight = np.where(np.isfinite(dsig_weight), dsig_weight, 1.0)
     dsig_weight /= np.sum(dsig_weight)
     delsig_weight = 1/(df_dsig['delsig_err'])
+    delsig_weight = np.where(np.isfinite(delsig_weight), delsig_weight, 1.0)
     delsig_weight /= np.sum(delsig_weight)
 
     df_dsig['dsig_weight'] = dsig_weight
