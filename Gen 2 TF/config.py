@@ -24,14 +24,14 @@ CONFIG = {
     'sets': [4],
     'replicas': 200,
     'threads': 45,
-    'data_filename': 'finalised pseudodata.csv', 
+    'data_filename': 'test.csv', 
     
     'show_devices': False,
     'verbose': 0,
     'model_summary' : False,
 
     'max_epochs': 1000, 
-    'batch_size': 24,
+    'batch_size': 4,
     'loss': MSE,
     'learning_rate': 1e-3,
     'modify_LR_factor': 0.8,
@@ -45,11 +45,11 @@ CONFIG = {
 
 FIXED_CFFS = {
         # 'ReH': -2.51484,
-        # 'ReHt': 1.3474,
-        # 'ReE': 2.1822,
-        'ReEt': 126.28265,
         # 'ImH': 3.20275, 
-        # 'ImHt': 1.49975,
+        'ReHt': 1.3474,
+        'ImHt': 1.49975,
+        'ReE': 2.1822,
+        'ReEt': 126.28265,
         'ImE': 0.0,
         'ImEt': 0.0,
 }
