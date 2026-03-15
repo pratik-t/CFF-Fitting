@@ -27,7 +27,7 @@ CONFIG = {
     'data_filename': 'test.csv', 
     
     'show_devices': False,
-    'verbose': 0,
+    'verbose': 1,
     'model_summary' : False,
 
     'max_epochs': 1000, 
@@ -44,11 +44,11 @@ CONFIG = {
 }
 
 FIXED_CFFS = {
-        # 'ReH': -2.51484,
-        # 'ImH': 3.20275, 
-        # 'ReHt': 1.3474,
-        # 'ImHt': 1.49975,
-        'ReE': 2.1822,
+        'ReH': -2.51484,
+        'ImH': 3.20275, 
+        'ReHt': 1.3474,
+        'ImHt': 1.49975,
+        # 'ReE': 2.1822,
         'ReEt': 126.28265,
         'ImE': 0.0,
         'ImEt': 0.0,
