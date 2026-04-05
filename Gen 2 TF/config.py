@@ -22,7 +22,7 @@ MSE = 2
 # ---- Global config variables ----
 CONFIG = {
     'sets': [4],
-    'replicas': 100,
+    'replicas': 45,
     'threads': 45,
     'data_filename': 'test.csv', 
     
@@ -30,13 +30,13 @@ CONFIG = {
     'verbose': 1,
     'model_summary' : False,
 
-    'max_epochs': 1000, 
+    'max_epochs': 500, 
     'batch_size': 1,
-    'loss': MSE,
-    'learning_rate': 1e-3,
+    'loss': MAE,
+    'learning_rate': 1e-1,
     'modify_LR_factor': 0.8,
     'modify_LR_patience': 30,
-    'minimum_LR': 1e-5,
+    'minimum_LR': 1e-6,
     'early_stop_patience': 30,
     'layers': [10, 50, 100, 50, 10],
     'activation': 'relu', 
@@ -44,12 +44,12 @@ CONFIG = {
 }
 
 FIXED_CFFS = {
-        # 'ReH': -2.51484,
-        # 'ImH': 3.20275, 
-        # 'ReHt': 1.3474,
-        # 'ImHt': 1.49975,
-        # 'ReE': 2.1822,
+        'ReH': -2.51484,
+        'ImH': 3.20275, 
+        'ReHt': 1.3474,
+        'ImHt': 1.49975,
+        'ReE': 2.1822,
         # 'ReEt': 126.28265,
-        # 'ImE': 0.0,
-        # 'ImEt': 0.0,
+        'ImE': 0.0,
+        'ImEt': 0.0,
 }

@@ -22,7 +22,8 @@ class CFF_Fit_Model(keras.layers.Layer):
 
         for i in range(len(layers)-1):
             hidden = keras.layers.Dense(layers[i+1], name = f'hidden_{i+1}',
-                                        kernel_initializer=initializer, activation=activation)(hidden)
+                                        kernel_initializer=initializer, 
+                                        activation=activation)(hidden)
 
         predicted_cffs = keras.layers.Dense(8, name='predicted_CFFs')(hidden)
 
@@ -44,7 +45,7 @@ class CFF_Fit_Model(keras.layers.Layer):
             - weights : normalised weights
         '''
         
-        opt = keras.optimizers.Adam(self.lr)
+        opt = keras.optimizers.Adam(self.lr, epsilon=1e-12)
 
         self.model.compile(optimizer=opt,
                            loss=self.compute_loss(loss_type, kinematics_plus, kinematics_mins, outputs_tensor))
