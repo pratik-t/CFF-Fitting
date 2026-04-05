@@ -44,7 +44,8 @@ def get_all_sig(set, index, N):
     true_dsig, true_delsig = get_sig(phi, plus, mins, [cffs])
 
     x = cffs[index]
-    scan_x = tf.linspace(-tf.abs(2*x)-10, tf.abs(2*x)+10, N)
+    scan_x = tf.linspace(-tf.abs(2*x)-10, tf.abs(2*x)+10, N-1)
+    scan_x = tf.sort(tf.concat([scan_x, [x]], axis=0))
     
     
     cffs_batch = tf.tile(tf.expand_dims(cffs, axis=0), [N, 1])
@@ -68,7 +69,8 @@ def get_all_grad(set_, index, N, eps):
     true_dsig, true_delsig = get_sig(phi, plus, mins, [cffs])
 
     x = cffs[index]
-    scan_x = tf.linspace(-tf.abs(2*x)-10, tf.abs(2*x)+10, N)
+    scan_x = tf.linspace(-tf.abs(2*x)-10, tf.abs(2*x)+10, N-1)
+    scan_x = tf.sort(tf.concat([scan_x, [x]], axis=0))
 
     cffs_batch_true = tf.tile(tf.expand_dims(cffs, axis=0), [N, 1])
     
@@ -143,4 +145,4 @@ def get_loss_landscape(set_, iters):
     df_cff = pd.concat(dfs_cffs, ignore_index=True)
     df_cff.to_parquet("./data/1CFF_MSE_set4.parquet")
 
-get_loss_landscape(4, iters=1001)
+get_loss_landscape(4, iters=5000)
