@@ -43,7 +43,8 @@ def plot(cff1, cff2, zrange):
         x=X,
         y=Y,
         z=Z,
-        colorbar=dict(title='log(MSE)'), 
+        colorbar=dict(title='log(MSE)'),
+        showscale=False, 
         zmin=zrange[0], zmax=zrange[1]))
 
     fig.add_trace(go.Scatter(
@@ -71,7 +72,8 @@ def plot(cff1, cff2, zrange):
                     xaxis_title=names[i1],yaxis_title=names[i2],
                     xaxis=dict(range=[xmin, xmax]),
                     yaxis=dict(range=[ymin, ymax]),
-                    font=dict(family="Serif", size=16))
+                    font=dict(family="Serif", size=20), 
+                    margin=dict(l=10, r=10, t=10, b=10))
     
     fig.write_image(f'./figs/2CFF_{cff1}{cff2}.pdf')
 
