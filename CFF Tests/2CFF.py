@@ -22,7 +22,16 @@ def get_bkm(set_num):
 
     cffs = tf.convert_to_tensor(cffs, dtype=tf.float32)
 
-    return phi, plus, mins, cffs
+    ranges = [[-30., 30.], 
+              [-30., 30.], 
+              [-100., 100.], 
+              [-400., 400.], 
+              [-20., 20.],
+              [-30., 30.],
+              [-100., 100.],
+              [-400., 400.]]
+    
+    return phi, plus, mins, cffs, ranges
 
 def get_sig(phi, plus, mins, cffs):
 
@@ -35,20 +44,27 @@ def get_sig(phi, plus, mins, cffs):
     return dsig, delsig
 
 def loss(y1, y1_true, y2, y2_true):
-    return tf.reduce_sum(tf.abs(y1-y1_true)+tf.abs(y2-y2_true), axis=1)
+    return tf.reduce_sum(tf.abs(y1-y1_true)**2+tf.abs(y2-y2_true)**2, axis=1)
 
 def get_all_sig(set, i1, i2, N):
 
-    phi, plus, mins, cffs = get_bkm(set)
-
+    phi, plus, mins, cffs, ranges = get_bkm(set)
+    
     true_dsig, true_delsig = get_sig(phi, plus, mins, tf.expand_dims(cffs, axis=0))
 
     x = cffs[i1]
     y = cffs[i2]
 
-    scan_x = tf.linspace(-tf.abs(2*x)-10, tf.abs(2*x)+10, N-1)
+    x_range = ranges[i1] 
+    y_range = ranges[i2]
+
+    # scan_x = tf.linspace(-tf.abs(2*x)-10, tf.abs(2*x)+10, N-1)
+    # scan_y = tf.linspace(-tf.abs(2*y)-10, tf.abs(2*y)+10, N-1)
+
+    scan_x = tf.linspace(x_range[0], x_range[1], N-1)
     scan_x = tf.sort(tf.concat([scan_x, [x]], axis=0))
-    scan_y = tf.linspace(-tf.abs(2*y)-10, tf.abs(2*y)+10, N-1)
+    
+    scan_y = tf.linspace(y_range[0], y_range[1], N-1)
     scan_y = tf.sort(tf.concat([scan_y, [y]], axis=0))
     
     scan_x = tf.repeat(scan_x, N)
@@ -96,6 +112,6 @@ def get_loss_landscape(set_, iters):
             dfs_cffs.append(df_sub)
         
     df_cff = pd.concat(dfs_cffs, ignore_index=True)
-    df_cff.to_parquet("./data/2CFF_MAE_set4.parquet")
+    df_cff.to_parquet("./data/2CFF_MSE_set4.parquet")
 
-get_loss_landscape(4, iters=1000)
+get_loss_landscape(4, iters=2000)
