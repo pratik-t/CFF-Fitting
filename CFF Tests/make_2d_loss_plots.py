@@ -32,7 +32,8 @@ def plot(cff1, cff2, zrange):
 
     x_true = df_sub['true_cff1'].values[0]
     y_true = df_sub['true_cff2'].values[0]
-
+    
+ 
     mask = (Z >= zrange[0]) & (Z <= zrange[1])
     x_vals = X[np.any(mask, axis=0)]
     y_vals = Y[np.any(mask, axis=1)]
