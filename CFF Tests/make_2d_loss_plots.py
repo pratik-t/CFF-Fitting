@@ -8,7 +8,8 @@ df = pd.read_parquet('./data/2CFF_MSE_set4.parquet')
 def plot(cff1, cff2, zrange):
 
     names = ['Re(H)','Re(Ht)','Re(E)','Re(Et)','Im(H)','Im(Ht)','Im(E)','Im(Et)']
-
+    true_cffs = [-2.51484,1.3474,2.1822,126.28265,3.20275, 1.49975,0.0,0.0,]
+    
     if (cff1<cff2):
         i1 = cff1
         i2 = cff2
@@ -40,7 +41,7 @@ def plot(cff1, cff2, zrange):
     xmin, xmax = x_vals.min(), x_vals.max()
     ymin, ymax = y_vals.min(), y_vals.max()
 
-    mask_ = (Z >= -7) & (Z <= -5)
+    mask_ = (Z >= -8) & (Z <= -6)
     labeled, n_groups = label(mask_, structure=np.ones((3, 3), dtype=int))
     texts = []
     for group_idx in range(1, n_groups + 1):
@@ -112,41 +113,41 @@ for i in range(7):
     for j in cffs_other:
 
         print(i,j)
-        plot(i, j, [-7,-1])
+        plot(i, j, [-8,-1])
 
-## colorbar
+# colorbar
 
-# zrange = [-7,-1]
-# fig = go.Figure()
+zrange = [-8,-1]
+fig = go.Figure()
 
-# fig.add_trace(go.Contour(
-#     z=[[zrange[0], zrange[1]]],
-#     colorscale='Inferno',
-#     showscale=True,
-#     contours=dict(showlines=False),
-#     line=dict(width=0),
-#     hoverinfo='skip',
-#     colorbar=dict(
-#         orientation='h',
-#         x=0.5,
-#         y=0.5,
-#         xanchor='center',
-#         yanchor='middle',
-#         len=0.7, 
-#         title='log(MSE)',
-#         title_side='top'
-#     )
-# ))
+fig.add_trace(go.Contour(
+    z=[[zrange[0], zrange[1]]],
+    colorscale='Inferno',
+    showscale=True,
+    contours=dict(showlines=False),
+    line=dict(width=0),
+    hoverinfo='skip',
+    colorbar=dict(
+        orientation='h',
+        x=0.5,
+        y=0.5,
+        xanchor='center',
+        yanchor='middle',
+        len=0.7, 
+        title='log(MSE)',
+        title_side='top'
+    )
+))
 
-# fig.update_layout(
-#     width=1000,
-#     height=200,
-#     paper_bgcolor='white',
-#     plot_bgcolor='white',
-#     xaxis=dict(visible=False),
-#     yaxis=dict(visible=False),
-#     font=dict(family="Serif", size=20),
-#     margin=dict(l=0, r=0, t=0, b=0)
-# )
+fig.update_layout(
+    width=1000,
+    height=200,
+    paper_bgcolor='white',
+    plot_bgcolor='white',
+    xaxis=dict(visible=False),
+    yaxis=dict(visible=False),
+    font=dict(family="Serif", size=20),
+    margin=dict(l=0, r=0, t=0, b=0)
+)
 
-# fig.write_image(f'./figs/colorbar.pdf', scale=2)
+fig.write_image(f'./figs/colorbar.pdf', scale=2)
