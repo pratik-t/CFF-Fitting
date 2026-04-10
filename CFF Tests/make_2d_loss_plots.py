@@ -41,7 +41,7 @@ def plot(cff1, cff2, zrange):
     xmin, xmax = x_vals.min(), x_vals.max()
     ymin, ymax = y_vals.min(), y_vals.max()
 
-    mask_ = (Z >= -8) & (Z <= -6)
+    mask_ = (Z >= -8) & (Z <= -5)
     labeled, n_groups = label(mask_, structure=np.ones((3, 3), dtype=int))
     texts = []
     for group_idx in range(1, n_groups + 1):
@@ -74,17 +74,6 @@ def plot(cff1, cff2, zrange):
         symbol='x'
     )))
     
-    fig.add_trace(go.Contour(
-    x=X,
-    y=Y,
-    z=Z,
-    zmin=zrange[0], zmax=zrange[1],
-    ncontours=50,
-    contours=dict(showlines=True),
-    showscale=False,
-    line=dict(color='white', width=1)
-    ))
-
     fig.add_annotation(
     text=texts,
     xref="paper", yref="paper",
