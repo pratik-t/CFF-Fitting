@@ -1,8 +1,10 @@
 import numpy as np
 import pandas as pd
 from scipy.ndimage import label
-
 import plotly.graph_objects as go
+import img2pdf
+import os
+
 df = pd.read_parquet('./data/2CFF_MSE_set4.parquet')
 
 def plot(cff1, cff2, zrange):
@@ -92,7 +94,15 @@ def plot(cff1, cff2, zrange):
                     font=dict(family="Serif", size=20), 
                     margin=dict(l=10, r=10, t=10, b=10))
     
-    fig.write_image(f'./figs/2CFF_{cff1}{cff2}.pdf')
+    png_path = f'./figs/2CFF_{cff1}{cff2}.png'
+    pdf_path = f'./figs/2CFF_{cff1}{cff2}.pdf'
+
+    fig.write_image(png_path, width=800, height=800, scale=2)
+
+    with open(pdf_path, "wb") as f:
+        f.write(img2pdf.convert(png_path))
+
+    os.remove(png_path)
 
     
 for i in range(7):
