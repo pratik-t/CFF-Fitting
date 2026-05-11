@@ -1,10 +1,9 @@
 import tensorflow as tf
 import keras
-from config import FIXED_CFFS
 
 class BKM10(keras.layers.Layer):
 
-    def __init__(self, k, Q2, x, t, helc=0, twist=2):
+    def __init__(self, k, Q2, x, t, helc=0, twist=2, FIXED_CFFS={}):
         '''
         kins(sequence of floats): Kinematic variables k, Q², x_b, t, φ where
         - k  : incoming lepton energy in the target rest frame(GeV)
